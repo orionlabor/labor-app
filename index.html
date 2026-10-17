@@ -109,7 +109,7 @@ body.role-user .admin-only{display:none!important}
 .inst{margin-top:14px;border:1.5px dashed var(--accent-line);background:var(--accent-soft);border-radius:14px;padding:12px;font-size:13.5px;color:var(--ink)}
 .inst b{display:block;margin-bottom:6px;color:var(--accent);font-size:14.5px}.inst ol{margin:6px 0 0;padding-right:20px;color:var(--sub);line-height:1.8}.inst .btn{margin-top:8px}
 body.standalone .inst{display:none!important}
-#instBar{display:none;position:fixed;z-index:450;border:1.5px solid rgba(255,255,255,.45);top:10px;left:50%;transform:translateX(-50%);width:min(440px,calc(100% - 20px));background:var(--accent);color:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 8px 24px rgba(0,0,0,.28);align-items:center;gap:10px;font-size:14px}
+#instBar{display:none;position:fixed;z-index:450;border:1.5px solid rgba(255,255,255,.45);bottom:84px;left:50%;transform:translateX(-50%);width:min(440px,calc(100% - 20px));background:var(--accent);color:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 8px 24px rgba(0,0,0,.28);align-items:center;gap:10px;font-size:14px}
 #instBar.show{display:flex}#instBar span{flex:1;font-weight:700}#instBar button{border:0;border-radius:10px;padding:8px 14px;font:inherit;font-weight:800;cursor:pointer}#instBar .go{background:#fff;color:var(--accent)}#instBar .x{background:transparent;color:#fff;padding:8px 6px;font-size:18px}
 body.standalone #instBar{display:none!important}
 body.no-eval .evaltab{display:none!important}
@@ -857,8 +857,13 @@ function drawInstall(){
   });
 }
 function instBar(){const bar=document.getElementById('instBar');let off=0;try{off=sessionStorage.getItem('wl-inst-x')==='1'||localStorage.getItem('wl-inst-x')>String(Date.now())}catch(e){}
-  bar.classList.toggle('show',!!deferredInstall&&!isStandalone()&&!off)}
-document.getElementById('instGo').onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();try{await deferredInstall.userChoice}catch(e){}deferredInstall=null;drawInstall();instBar()};
+  const mobile=/Android|iPhone|iPad|iPod/.test(navigator.userAgent||'');
+  const hint=!deferredInstall&&!mobile&&bar.dataset.hint==='1';
+  bar.querySelector('span').textContent=hint?'📲 للتثبيت: دوس أيقونة التثبيت في شريط العنوان، أو ⋮ ثم «تثبيت»':'📲 ثبّت التطبيق على جهازك';
+  document.getElementById('instGo').textContent=hint?'تمام':'تثبيت';
+  bar.classList.toggle('show',(!!deferredInstall||hint)&&!isStandalone()&&!off)}
+setTimeout(()=>{if(!deferredInstall){document.getElementById('instBar').dataset.hint='1';instBar()}},3000);
+document.getElementById('instGo').onclick=async()=>{if(!deferredInstall){document.getElementById('instX').click();return}deferredInstall.prompt();try{await deferredInstall.userChoice}catch(e){}deferredInstall=null;drawInstall();instBar()};
 document.getElementById('instX').onclick=()=>{try{localStorage.setItem('wl-inst-x',String(Date.now()+3*86400000))}catch(e){}document.getElementById('instBar').classList.remove('show')};
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;drawInstall();instBar()});
 window.addEventListener('appinstalled',()=>{deferredInstall=null;document.body.classList.add('standalone');instBar();toast('اتثبّت التطبيق ✓')});
