@@ -842,7 +842,7 @@ $('uAdd').onclick=async()=>{const name=$('uName').value.trim();if(!name)return t
     newCode={name,code:j.code};$('uName').value='';document.querySelectorAll('#uGroups [data-g]').forEach(x=>x.checked=false);await loadUsers()}catch(e){toast(e.message||e)}};
 
 /* ================= تثبيت التطبيق (للناس اللي مش بتعرف) ================= */
-const APP_VER='17';document.getElementById('appVer').textContent=APP_VER;
+const APP_VER='18';document.getElementById('appVer').textContent=APP_VER;
 let deferredInstall=null;
 const isStandalone=()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}};
 function installSteps(){
